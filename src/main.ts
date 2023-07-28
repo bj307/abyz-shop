@@ -5,7 +5,7 @@ import { AppModule } from './app.module';
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
-  const serviceAccount = 'prodshopFirebaseAccess.json';
+  const serviceAccount = './prodshopFirebaseAccess.json';
 
   admin.initializeApp({
     credential: admin.credential.cert(serviceAccount),
