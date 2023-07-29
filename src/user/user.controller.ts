@@ -11,7 +11,7 @@ import {
 import { UserService } from './user.service';
 import { CadastroDTO } from './DTO/cadastro.dto';
 import { LoginDTO } from './DTO/login.dto';
-import { AdminRoleGuard } from '../auth/guards/admin-role.guard';
+import { UserRoleGuard } from '../auth/guards/admin-role.guard';
 import { ShowDTO } from './DTO/show.dto';
 import { AuthGuard } from '@nestjs/passport';
 import { UpdateDTO } from './DTO/update.dto';
@@ -22,7 +22,7 @@ export class UserController {
   constructor(private readonly userService: UserService) {}
 
   @Post('novo')
-  @UseGuards(AdminRoleGuard)
+  @UseGuards(UserRoleGuard)
   public async cadastro(@Body() u: CadastroDTO): Promise<string> {
     const user = await this.userService.cadastro(u);
 
@@ -56,6 +56,7 @@ export class UserController {
   }
 
   @Put()
+  @UseGuards(UserRoleGuard)
   public async update(
     @Query('id') id: string,
     @Body() l: LimitsDTO,

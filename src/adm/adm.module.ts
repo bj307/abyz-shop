@@ -4,6 +4,7 @@ import { AdmController } from './adm.controller';
 
 @Module({
   providers: [AdmService],
-  controllers: [AdmController]
+  controllers: [AdmController],
+  exports: [AdmService],
 })
 export class AdmModule {}

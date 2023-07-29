@@ -3,11 +3,11 @@ import { UserService } from './user.service';
 import { UserController } from './user.controller';
 import { AuthModule } from 'src/auth/auth.module';
 import { AuthService } from 'src/auth/auth.service';
-import { AdminRoleGuard } from '../auth/guards/admin-role.guard';
+import { UserRoleGuard } from '../auth/guards/admin-role.guard';
 
 @Module({
   imports: [AuthModule],
-  providers: [UserService, AuthService, AdminRoleGuard],
+  providers: [UserService, AuthService, UserRoleGuard],
   controllers: [UserController],
   exports: [UserService],
 })

@@ -27,12 +27,20 @@ export class UserService {
   }
 
   private collection = 'User';
+  private collect = 'Person';
 
   async cadastro(u: CadastroDTO): Promise<string> {
     try {
       u.roles = UserRoles.MEMBER;
       u.password = await bcrypt.hash(u.password, 10);
       const user: any = await this.db.collection(this.collection).add(u);
+
+      const person = {
+        id: user.id,
+        roles: u.roles,
+      };
+
+      await this.db.collection(this.collect).add(person);
 
       return user.id;
     } catch (error) {
@@ -59,6 +67,21 @@ export class UserService {
       };
 
       return userDTO;
+    } catch (error) {
+      throw new Error('Erro ao buscar o documento: ' + error.message);
+    }
+  }
+
+  async buscarRoles(id: string): Promise<string> {
+    try {
+      const personRef = this.db.collection(this.collect);
+      const snapshot = await personRef.where('id', '==', id).get();
+      if (snapshot.empty) {
+        console.log('User não encontrado.');
+        return;
+      }
+
+      return snapshot.docs[0].data().roles;
     } catch (error) {
       throw new Error('Erro ao buscar o documento: ' + error.message);
     }
@@ -108,6 +131,13 @@ export class UserService {
       const res = await usuario.set(
         {
           l,
+        },
+        { merge: true },
+      );
+      const person = await this.db.collection(this.collect).doc(id);
+      await person.set(
+        {
+          roles: l.roles,
         },
         { merge: true },
       );

@@ -7,7 +7,7 @@ import { LojaModule } from './loja/loja.module';
 import { ProdutoModule } from './produto/produto.module';
 import { RodapeModule } from './rodape/rodape.module';
 import { AuthModule } from './auth/auth.module';
-import { AdminRoleGuard } from './auth/guards/admin-role.guard';
+import { UserRoleGuard } from './auth/guards/admin-role.guard';
 
 @Module({
   imports: [
@@ -20,6 +20,6 @@ import { AdminRoleGuard } from './auth/guards/admin-role.guard';
     AuthModule,
   ],
   controllers: [AppController],
-  providers: [AppService, AdminRoleGuard],
+  providers: [AppService, UserRoleGuard],
 })
 export class AppModule {}
