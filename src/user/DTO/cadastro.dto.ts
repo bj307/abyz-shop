@@ -5,7 +5,6 @@ import {
   MinLength,
   IsBoolean,
 } from 'class-validator';
-import { Role } from 'src/guards/role.enum';
 
 export class CadastroDTO {
   @IsNotEmpty()
@@ -29,6 +28,4 @@ export class CadastroDTO {
   @IsNotEmpty()
   @IsBoolean()
   ativo: boolean;
-
-  roles: Role[];
 }

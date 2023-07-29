@@ -2,7 +2,6 @@ import { Injectable } from '@nestjs/common';
 import * as admin from 'firebase-admin';
 import { CadastroDTO } from './DTO/cadastro.dto';
 import { UserDTO } from './DTO/user.dto';
-import { Role } from 'src/guards/role.enum';
 
 @Injectable()
 export class UserService {
@@ -16,7 +15,6 @@ export class UserService {
 
   async cadastro(u: CadastroDTO): Promise<string> {
     try {
-      u.roles = [Role.User];
       const user: any = await this.db.collection(this.collection).add(u);
 
       return user.id;
@@ -40,7 +38,6 @@ export class UserService {
         email: user._fieldsProto.email.stringValue,
         password: user._fieldsProto.password.stringValue,
         ativo: user._fieldsProto.ativo.booleanValue,
-        roles: user._fieldsProto.roles.booleanValue,
       };
 
       return userDTO;

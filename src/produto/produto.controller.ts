@@ -9,11 +9,8 @@ import {
 } from '@nestjs/common';
 import { ProdutoService } from './produto.service';
 import { ProdutoDTO } from './DTO/produto.dto';
-import { Roles } from 'src/guards/roles.decorator';
-import { Role } from 'src/guards/role.enum';
 
 @Controller('produto')
-@Roles(Role.Admin)
 export class ProdutoController {
   constructor(private readonly produtoService: ProdutoService) {}
 
