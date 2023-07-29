@@ -11,7 +11,7 @@ import * as bcrypt from 'bcrypt';
 import { LoginDTO } from './DTO/login.dto';
 import { AuthService } from 'src/auth/auth.service';
 import { ShowDTO } from './DTO/show.dto';
-import { UserRoles } from 'src/auth/guards/user.enum';
+import { UserRoles } from '../auth/guards/user.enum';
 import { UpdateDTO } from './DTO/update.dto';
 import { LimitsDTO } from './DTO/limits.dto';
 
