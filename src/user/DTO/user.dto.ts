@@ -5,9 +5,11 @@ import {
   IsBoolean,
   IsOptional,
   IsArray,
+  ArrayMaxSize,
 } from 'class-validator';
 import { Exclude } from 'class-transformer';
 import { LojaDTO } from 'src/loja/DTO/loja.dto';
+import { Role } from 'src/guards/role.enum';
 
 export class UserDTO {
   @IsNotEmpty()
@@ -41,7 +43,7 @@ export class UserDTO {
   apiChat?: string;
 
   @IsOptional()
-  @IsArray()
+  @ArrayMaxSize(3)
   loja?: LojaDTO[];
 
   @IsOptional()
@@ -49,10 +51,12 @@ export class UserDTO {
   produtos?: string[];
 
   @IsOptional()
-  @IsArray()
+  @ArrayMaxSize(3)
   avaliacoes?: string[];
 
   @IsOptional()
-  @IsArray()
+  @ArrayMaxSize(3)
   rodape?: string[];
+
+  roles: Role[];
 }

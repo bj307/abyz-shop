@@ -9,7 +9,6 @@ export class LojaDTO {
   nome: string;
 
   @IsNotEmpty()
-  @IsString()
   logo: string;
 
   @IsNotEmpty()

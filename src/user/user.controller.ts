@@ -28,4 +28,9 @@ export class UserController {
 
     return user;
   }
+
+  @Post('login')
+  public async login() {
+    return;
+  }
 }
