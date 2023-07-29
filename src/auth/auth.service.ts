@@ -44,4 +44,20 @@ export class AuthService {
 
     return token;
   }
+
+  private static jwtExtractorr(request: Request): string {
+    const authHeader = request.headers.authorization;
+
+    if (!authHeader) {
+      throw new BadRequestException('Bad request. Token inválido!');
+    }
+
+    const [, token] = authHeader.split(' ');
+
+    return token;
+  }
+
+  public returnJwtExtractor(): (request: Request) => string {
+    return AuthService.jwtExtractorr;
+  }
 }

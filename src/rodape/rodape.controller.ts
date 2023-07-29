@@ -6,11 +6,14 @@ import {
   Delete,
   Param,
   Body,
+  UseGuards,
 } from '@nestjs/common';
 import { RodapeService } from './rodape.service';
 import { RodapeDTO } from './DTO/rodape.dto';
+import { AuthGuard } from '@nestjs/passport';
 
 @Controller('rodape')
+@UseGuards(AuthGuard('jwt'))
 export class RodapeController {
   constructor(private readonly rodapeService: RodapeService) {}
 

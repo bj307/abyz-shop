@@ -7,12 +7,15 @@ import {
   Param,
   UploadedFile,
   UseInterceptors,
+  UseGuards,
 } from '@nestjs/common';
 import { LojaService } from './loja.service';
 import { LojaDTO } from './DTO/loja.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
+import { AuthGuard } from '@nestjs/passport';
 
 @Controller('loja')
+@UseGuards(AuthGuard('jwt'))
 export class LojaController {
   constructor(private readonly lojaService: LojaService) {}
 

@@ -28,4 +28,6 @@ export class CadastroDTO {
   @IsNotEmpty()
   @IsBoolean()
   ativo: boolean;
+
+  roles: string;
 }

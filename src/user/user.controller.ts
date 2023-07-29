@@ -1,14 +1,28 @@
-import { Controller, Post, Get, Body, Param, Query } from '@nestjs/common';
+import {
+  Controller,
+  Post,
+  Get,
+  Body,
+  Param,
+  UseGuards,
+  Put,
+  Query,
+} from '@nestjs/common';
 import { UserService } from './user.service';
-import { UserDTO } from './DTO/user.dto';
 import { CadastroDTO } from './DTO/cadastro.dto';
 import { LoginDTO } from './DTO/login.dto';
+import { AdminRoleGuard } from 'src/auth/guards/admin-role.guard';
+import { ShowDTO } from './DTO/show.dto';
+import { AuthGuard } from '@nestjs/passport';
+import { UpdateDTO } from './DTO/update.dto';
+import { LimitsDTO } from './DTO/limits.dto';
 
 @Controller('user')
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
   @Post('novo')
+  @UseGuards(AdminRoleGuard)
   public async cadastro(@Body() u: CadastroDTO): Promise<string> {
     const user = await this.userService.cadastro(u);
 
@@ -20,8 +34,9 @@ export class UserController {
   }
 
   @Get(':id')
-  public async buscarId(@Param('id') id: string): Promise<UserDTO> {
-    const user = await this.userService.buscarId(id);
+  @UseGuards(AuthGuard('jwt'))
+  public async buscarId(@Param('id') id: string): Promise<ShowDTO> {
+    const user = await this.userService.show(id);
 
     if (!user) {
       return;
@@ -30,16 +45,24 @@ export class UserController {
     return user;
   }
 
-  @Get()
-  public async buscarEmail(@Query('email') email: string): Promise<UserDTO> {
-    const user = await this.userService.buscarEmail(email);
+  @Put(':id')
+  @UseGuards(AuthGuard('jwt'))
+  public async updateUser(
+    @Param('id') id: string,
+    @Body() u: UpdateDTO,
+  ): Promise<any> {
+    const usuario = await this.userService.updateUser(id, u);
+    return usuario;
+  }
 
-    if (!user) {
-      return;
-    }
+  @Put()
+  public async update(
+    @Query('id') id: string,
+    @Body() l: LimitsDTO,
+  ): Promise<any> {
+    const usuario = await this.userService.update(id, l);
 
-    console.log(user);
-    return user;
+    return usuario;
   }
 
   @Post('login')

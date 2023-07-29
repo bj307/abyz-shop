@@ -7,10 +7,9 @@ import {
   IsArray,
   ArrayMaxSize,
 } from 'class-validator';
-import { Exclude } from 'class-transformer';
 import { LojaDTO } from 'src/loja/DTO/loja.dto';
 
-export class UserDTO {
+export class ShowDTO {
   @IsNotEmpty()
   @IsString()
   id: string;
@@ -27,11 +26,6 @@ export class UserDTO {
   @IsEmail()
   @IsString()
   email: string;
-
-  @IsNotEmpty()
-  @IsString()
-  @Exclude()
-  password: string;
 
   @IsNotEmpty()
   @IsBoolean()
@@ -56,6 +50,4 @@ export class UserDTO {
   @IsOptional()
   @ArrayMaxSize(3)
   rodape?: string[];
-
-  roles: string;
 }
