@@ -11,4 +11,8 @@ export class LojaDTO {
   @IsNotEmpty()
   @IsString()
   logo: string;
+
+  @IsNotEmpty()
+  @IsString()
+  path: string;
 }

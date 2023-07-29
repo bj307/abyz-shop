@@ -19,6 +19,7 @@ export class LojaService {
     try {
       const logoUrl = await this.saveImageToStorage(filePath, file);
       l.logo = logoUrl;
+      l.path = filePath;
       const loja: any = await this.db.collection(this.collection).add(l);
 
       return loja.id;
@@ -43,6 +44,17 @@ export class LojaService {
     }
   }
 
+  async removeImageToStorage(path: string) {
+    try {
+      const fileRef = admin.storage().bucket(this.bucket).file(path);
+
+      console.log(fileRef);
+      fileRef.delete();
+    } catch (error) {
+      throw new Error('Erro ao remover o documento: ' + error.message);
+    }
+  }
+
   async buscarId(id: string): Promise<LojaDTO> {
     try {
       const lojaRef = this.db.collection(this.collection).doc(id);
@@ -55,6 +67,7 @@ export class LojaService {
         id: loja.id,
         nome: loja._fieldsProto.nome.stringValue,
         logo: loja._fieldsProto.logo.stringValue,
+        path: loja._fieldsProto.path.stringValue,
       };
 
       return lojaDTO;

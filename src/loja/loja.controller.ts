@@ -2,6 +2,7 @@ import {
   Controller,
   Post,
   Get,
+  Delete,
   Body,
   Param,
   UploadedFile,
@@ -21,8 +22,7 @@ export class LojaController {
     @Body() l: LojaDTO,
     @UploadedFile() logo: any,
   ): Promise<string> {
-    const filePath = `lojas/${l.nome}/${logo.originalname}`;
-
+    const filePath = `lojas/usuario/${logo.originalname}`;
     const loja = await this.lojaService.criar(l, filePath, logo.buffer);
 
     if (!logo || !logo.buffer) {
@@ -41,5 +41,11 @@ export class LojaController {
     }
 
     return loja;
+  }
+
+  @Delete(':id')
+  public async deletar(@Param('id') id: string) {
+    const urlImage = await this.buscarId(id);
+    return await this.lojaService.removeImageToStorage(urlImage.path);
   }
 }
