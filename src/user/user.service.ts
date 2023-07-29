@@ -1,13 +1,24 @@
-import { Injectable } from '@nestjs/common';
+import {
+  Inject,
+  Injectable,
+  NotFoundException,
+  forwardRef,
+} from '@nestjs/common';
 import * as admin from 'firebase-admin';
 import { CadastroDTO } from './DTO/cadastro.dto';
 import { UserDTO } from './DTO/user.dto';
+import * as bcrypt from 'bcrypt';
+import { LoginDTO } from './DTO/login.dto';
+import { AuthService } from 'src/auth/auth.service';
 
 @Injectable()
 export class UserService {
   private readonly db: FirebaseFirestore.Firestore;
 
-  constructor() {
+  constructor(
+    @Inject(forwardRef(() => AuthService))
+    private authService: AuthService,
+  ) {
     this.db = admin.firestore();
   }
 
@@ -15,6 +26,7 @@ export class UserService {
 
   async cadastro(u: CadastroDTO): Promise<string> {
     try {
+      u.password = await bcrypt.hash(u.password, 10);
       const user: any = await this.db.collection(this.collection).add(u);
 
       return user.id;
@@ -44,5 +56,63 @@ export class UserService {
     } catch (error) {
       throw new Error('Erro ao buscar o documento: ' + error.message);
     }
+  }
+
+  async buscarEmail(email: string): Promise<UserDTO> {
+    try {
+      const usersRef = this.db.collection(this.collection);
+      const snapshot = await usersRef.where('email', '==', email).get();
+      if (snapshot.empty) {
+        console.log('User não encontrado.');
+        return;
+      }
+
+      const userDTO: UserDTO =
+        snapshot.docs.length > 0
+          ? {
+              id: snapshot.docs[0].id,
+              nome: snapshot.docs[0].data().nome,
+              cpf: snapshot.docs[0].data().cpf,
+              email: snapshot.docs[0].data().email,
+              password: snapshot.docs[0].data().password,
+              ativo: snapshot.docs[0].data().ativo,
+            }
+          : null;
+
+      return userDTO;
+    } catch (error) {
+      throw new Error('Erro ao buscar o documento: ' + error.message);
+    }
+  }
+
+  async login(
+    login: LoginDTO,
+  ): Promise<{ id: string; nome: string; jwtToken: string; email: string }> {
+    const user = await this.buscarEmail(login.email);
+    const valid = await this.checkPassword(login.password, user);
+
+    if (!valid) {
+      throw new NotFoundException('Credenciais inválidas.');
+    }
+
+    const jwtToken = await this.authService.createAccessToken(user.id);
+    return {
+      id: user.id,
+      nome: user.nome,
+      jwtToken,
+      email: user.email,
+    };
+  }
+
+  private async checkPassword(
+    password: string,
+    user: UserDTO,
+  ): Promise<boolean> {
+    const valid = await bcrypt.compare(password, user.password);
+    if (!valid) {
+      throw new NotFoundException('Senha inválida.');
+    }
+
+    return valid;
   }
 }

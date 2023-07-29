@@ -1,7 +1,9 @@
 import {
   BadRequestException,
+  Inject,
   Injectable,
   UnauthorizedException,
+  forwardRef,
 } from '@nestjs/common';
 import { sign } from 'jsonwebtoken';
 import { UserService } from 'src/user/user.service';
@@ -11,7 +13,10 @@ import { Request } from 'express';
 
 @Injectable()
 export class AuthService {
-  constructor(private readonly userService: UserService) {}
+  constructor(
+    @Inject(forwardRef(() => UserService))
+    private userService: UserService,
+  ) {}
 
   public async createAccessToken(userId: string): Promise<string> {
     return sign({ userId }, process.env.JWT_SECRET, {
