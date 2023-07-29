@@ -8,7 +8,7 @@ export class UserController {
   constructor(private readonly userService: UserService) {}
 
   @Post('novo')
-  public async cadastro(@Body() u: CadastroDTO): Promise<UserDTO> {
+  public async cadastro(@Body() u: CadastroDTO): Promise<string> {
     const user = await this.userService.cadastro(u);
 
     if (!user) {
