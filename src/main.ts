@@ -12,7 +12,7 @@ async function bootstrap() {
     credential: admin.credential.cert(serviceAccount),
   });
 
-  const app = await NestFactory.create(AppModule);
+  const app = await NestFactory.create(AppModule, { cors: true });
 
   const port = process.env.PORT || 3000;
   await app.listen(port);
