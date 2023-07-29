@@ -6,6 +6,7 @@ import {
   IsOptional,
   IsArray,
 } from 'class-validator';
+import { Exclude } from 'class-transformer';
 import { LojaDTO } from 'src/loja/DTO/loja.dto';
 
 export class UserDTO {
@@ -25,6 +26,11 @@ export class UserDTO {
   @IsEmail()
   @IsString()
   email: string;
+
+  @IsNotEmpty()
+  @IsString()
+  @Exclude()
+  password: string;
 
   @IsNotEmpty()
   @IsBoolean()

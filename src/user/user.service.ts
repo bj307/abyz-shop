@@ -36,6 +36,7 @@ export class UserService {
         nome: user._fieldsProto.nome.stringValue,
         cpf: user._fieldsProto.cpf.stringValue,
         email: user._fieldsProto.email.stringValue,
+        password: user._fieldsProto.password.stringValue,
         ativo: user._fieldsProto.ativo.booleanValue,
       };
 
