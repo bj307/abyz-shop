@@ -1,90 +1,94 @@
 import {
   Controller,
   Post,
-  Get,
-  Body,
-  Param,
-  Put,
-  Delete,
   UseGuards,
+  UseInterceptors,
   Request,
+  UploadedFile,
+  Delete,
+  Param,
+  Get,
 } from '@nestjs/common';
-import { ProdutoService } from './produto.service';
-import { ProdutoDTO } from './DTO/produto.dto';
 import { AuthGuard } from '@nestjs/passport';
+import { GaleriaService } from './galeria.service';
+import { AuthService } from 'src/auth/auth.service';
+import { FileInterceptor } from '@nestjs/platform-express';
 import { JwtPayload } from 'src/auth/model/jwtpayload.model';
 import { verify } from 'jsonwebtoken';
-import { AuthService } from 'src/auth/auth.service';
+import { FotoDTO } from './DTO/foto.dto';
 
-@Controller('produto')
+@Controller('galeria')
 @UseGuards(AuthGuard('jwt'))
-export class ProdutoController {
+export class GaleriaController {
   constructor(
-    private readonly produtoService: ProdutoService,
+    private readonly galeriaService: GaleriaService,
     private readonly authService: AuthService,
   ) {}
 
-  @Post('novo')
-  public async cadastro(
+  @Post('upload')
+  @UseInterceptors(FileInterceptor('foto'))
+  public async upload(
     @Request() req,
-    @Body() p: ProdutoDTO,
+    @UploadedFile() foto: any,
   ): Promise<string> {
     const jwtToken = await this.authService.jwtExtractor(req);
     const jwtPay = verify(jwtToken, process.env.JWT_SECRET) as JwtPayload;
     await this.authService.validateUser(jwtPay);
 
-    const produto = await this.produtoService.cadastro(p, jwtPay.userId);
-
-    if (!produto) {
-      return;
+    if (!foto || !foto.buffer) {
+      throw new Error('Nenhum arquivo de logo foi enviado.');
     }
 
-    return produto;
+    const filePath = `usuario/galeria/${foto.originalname}`;
+    const imagem = await this.galeriaService.upload(
+      filePath,
+      foto.buffer,
+      jwtPay.userId,
+    );
+
+    return imagem;
   }
 
   @Get(':id')
   public async buscarId(
     @Request() req,
     @Param('id') id: string,
-  ): Promise<ProdutoDTO> {
+  ): Promise<FotoDTO> {
     const jwtToken = await this.authService.jwtExtractor(req);
     const jwtPay = verify(jwtToken, process.env.JWT_SECRET) as JwtPayload;
     await this.authService.validateUser(jwtPay);
 
-    const produto = await this.produtoService.buscarId(id);
+    const foto = await this.galeriaService.buscarId(id);
 
-    if (!produto) {
+    if (!foto) {
       return;
     }
 
-    return produto;
+    return foto;
   }
 
-  @Put(':id')
-  public async atualizar(
-    @Request() req,
-    @Param('id') id: string,
-    @Body() p: ProdutoDTO,
-  ): Promise<string> {
+  @Get()
+  public async buscar(@Request() req): Promise<FotoDTO[]> {
     const jwtToken = await this.authService.jwtExtractor(req);
     const jwtPay = verify(jwtToken, process.env.JWT_SECRET) as JwtPayload;
     await this.authService.validateUser(jwtPay);
 
-    const produto = await this.produtoService.atualizar(id, p);
+    const fotos = await this.galeriaService.buscar(jwtPay.userId);
 
-    if (!produto) {
+    if (!fotos) {
       return;
     }
 
-    return produto;
+    return fotos;
   }
 
   @Delete(':id')
-  public async deletar(@Request() req, @Param('id') id: string) {
+  public async delete(@Request() req, @Param('id') id: string) {
     const jwtToken = await this.authService.jwtExtractor(req);
     const jwtPay = verify(jwtToken, process.env.JWT_SECRET) as JwtPayload;
     await this.authService.validateUser(jwtPay);
 
-    return await this.produtoService.deletar(id);
+    const urlImage = await this.galeriaService.buscarId(id);
+    return await this.galeriaService.deletar(id, urlImage.path);
   }
 }

@@ -15,8 +15,9 @@ export class ProdutoService {
   private collection = 'Produto';
   private readonly bucket = 'prodshop-28ebe.appspot.com';
 
-  async cadastro(p: ProdutoDTO): Promise<string> {
+  async cadastro(p: ProdutoDTO, user: string): Promise<string> {
     try {
+      p.userId = user;
       const produto: any = await this.db.collection(this.collection).add(p);
 
       return produto.id;
@@ -35,14 +36,16 @@ export class ProdutoService {
 
       const produtoDTO: ProdutoDTO = {
         id: produto.id,
-        nome: produto._fieldsProto.nome.stringValue,
-        preco: produto._fieldsProto.preco.stringValue,
-        precoPromo: produto._fieldsProto.precoPromo.stringValue,
-        descricao: produto._fieldsProto.descricao.stringValue,
-        loja: produto._fieldsProto.logo.stringValue,
-        rodape: produto._fieldsProto.rodape.stringValue,
-        botao: produto._fieldsProto.botao.stringValue,
-        avaliacao: produto._fieldsProto.avaliacao.stringValue,
+        nome: produto.data().nome,
+        preco: produto.data().preco,
+        precoPromo: produto.data().precoPromo,
+        descricao: produto.data().descricao,
+        loja: produto.data().loja,
+        rodape: produto.data().rodape,
+        botao: produto.data().botao,
+        avaliacao: produto.data().avaliacao,
+        userId: produto.data().userId,
+        fotos: produto.data().fotos,
       };
 
       return produtoDTO;

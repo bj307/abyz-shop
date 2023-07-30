@@ -1,7 +1,6 @@
-import { IsEmail, IsNotEmpty, IsOptional } from 'class-validator';
+import { IsEmail, IsNotEmpty } from 'class-validator';
 
 export class RodapeDTO {
-  @IsOptional()
   id?: string;
 
   @IsNotEmpty()
@@ -28,4 +27,6 @@ export class RodapeDTO {
 
   @IsNotEmpty()
   loja: string;
+
+  userId: string;
 }

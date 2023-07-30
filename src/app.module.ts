@@ -8,6 +8,8 @@ import { ProdutoModule } from './produto/produto.module';
 import { RodapeModule } from './rodape/rodape.module';
 import { AuthModule } from './auth/auth.module';
 import { UserRoleGuard } from './auth/guards/admin-role.guard';
+import { AvaliacaoModule } from './avaliacao/avaliacao.module';
+import { GaleriaModule } from './galeria/galeria.module';
 
 @Module({
   imports: [
@@ -18,6 +20,8 @@ import { UserRoleGuard } from './auth/guards/admin-role.guard';
     ProdutoModule,
     RodapeModule,
     AuthModule,
+    AvaliacaoModule,
+    GaleriaModule,
   ],
   controllers: [AppController],
   providers: [AppService, UserRoleGuard],

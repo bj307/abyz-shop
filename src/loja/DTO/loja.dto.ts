@@ -6,4 +6,6 @@ export class LojaDTO {
   logo: string;
 
   path: string;
+
+  userId: string;
 }

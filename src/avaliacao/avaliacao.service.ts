@@ -1,9 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import * as admin from 'firebase-admin';
-import { LojaDTO } from './DTO/loja.dto';
+import { AvaliacaoDTO } from './DTO/avaliacao.dto';
 
 @Injectable()
-export class LojaService {
+export class AvaliacaoService {
   private readonly db: FirebaseFirestore.Firestore;
   private readonly storage: admin.storage.Storage;
 
@@ -12,21 +12,21 @@ export class LojaService {
     this.storage = admin.storage();
   }
 
-  private readonly collection = 'Loja';
+  private readonly collection = 'Avaliacoes';
   private readonly bucket = 'prodshop-28ebe.appspot.com';
 
   async criar(
-    l: LojaDTO,
+    a: AvaliacaoDTO,
     filePath: string,
     file: Buffer,
     user: string,
   ): Promise<string> {
     try {
-      const logoUrl = await this.saveImageToStorage(filePath, file);
-      l.logo = logoUrl;
-      l.path = filePath;
-      l.userId = user;
-      const loja: any = await this.db.collection(this.collection).add(l);
+      const avaliacaoUrl = await this.saveImageToStorage(filePath, file);
+      a.userId = user;
+      a.foto = avaliacaoUrl;
+      a.path = filePath;
+      const loja: any = await this.db.collection(this.collection).add(a);
 
       return loja.id;
     } catch (error) {
@@ -61,26 +61,46 @@ export class LojaService {
     }
   }
 
-  async buscarId(id: string): Promise<LojaDTO> {
+  async buscarId(id: string): Promise<AvaliacaoDTO> {
     try {
-      const lojaRef = this.db.collection(this.collection).doc(id);
-      const loja: any = await lojaRef.get();
-      if (!loja) {
+      const avaliacaoRef = this.db.collection(this.collection).doc(id);
+      const avaliacao: any = await avaliacaoRef.get();
+      if (!avaliacao) {
         return;
       }
 
-      const lojaDTO: LojaDTO = {
-        id: loja.id,
-        nome: loja.data().nome,
-        logo: loja.data().logo,
-        path: loja.data().path,
-        userId: loja.data().userId,
+      const avaliacaoDTO: AvaliacaoDTO = {
+        id: avaliacao.id,
+        cliente: avaliacao.data().cliente,
+        texto: avaliacao.data().texto,
+        foto: avaliacao.data().foto,
+        path: avaliacao.data().path,
+        userId: avaliacao.data().userId,
       };
 
-      return lojaDTO;
-    } catch (error) {
-      throw new Error('Erro ao buscar o documento: ' + error.message);
-    }
+      return avaliacaoDTO;
+    } catch (error) {}
+  }
+
+  async buscarTodos(id: string): Promise<AvaliacaoDTO[]> {
+    try {
+      const avaliacaoRef = this.db.collection(this.collection);
+      const snapshot = await avaliacaoRef.where('userId', '==', id).get();
+      const avaliacoes: AvaliacaoDTO[] = [];
+      snapshot.forEach((doc: any) => {
+        const a: AvaliacaoDTO = {
+          id: doc.id,
+          cliente: doc.data().cliente,
+          foto: doc.data().foto,
+          path: doc.data().path,
+          texto: doc.data().texto,
+          userId: doc.data().userId,
+        };
+        avaliacoes.push(a);
+      });
+
+      return avaliacoes;
+    } catch (error) {}
   }
 
   async deletar(id: string, path: string) {

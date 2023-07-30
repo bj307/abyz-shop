@@ -33,14 +33,15 @@ export class RodapeService {
 
       const rodapeDTO: RodapeDTO = {
         id: rodape.id,
-        cnpj: rodape._fieldsProto.cnpj.stringValue,
-        endereco: rodape._fieldsProto.endereco.stringValue,
-        cep: rodape._fieldsProto.cep.stringValue,
-        cidade: rodape._fieldsProto.cidade.stringValue,
-        uf: rodape._fieldsProto.uf.stringValue,
-        email: rodape._fieldsProto.email.stringValue,
-        whatsapp: rodape._fieldsProto.whatsapp.stringValue,
-        loja: rodape._fieldsProto.loja.stringValue,
+        cnpj: rodape.data().cnpj,
+        endereco: rodape.data().endereco,
+        cep: rodape.data().cep,
+        cidade: rodape.data().cidade,
+        uf: rodape.data().uf,
+        email: rodape.data().email,
+        whatsapp: rodape.data().whatsapp,
+        loja: rodape.data().loja,
+        userId: rodape.data().userId,
       };
 
       return rodapeDTO;

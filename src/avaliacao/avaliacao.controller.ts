@@ -1,53 +1,53 @@
 import {
   Controller,
-  Post,
-  Get,
-  Delete,
-  Body,
-  Param,
-  UploadedFile,
-  UseInterceptors,
   UseGuards,
   Request,
+  Post,
+  Get,
+  Body,
+  Param,
+  Delete,
+  UploadedFile,
+  UseInterceptors,
 } from '@nestjs/common';
-import { LojaService } from './loja.service';
-import { LojaDTO } from './DTO/loja.dto';
-import { FileInterceptor } from '@nestjs/platform-express';
 import { AuthGuard } from '@nestjs/passport';
 import { JwtPayload } from 'src/auth/model/jwtpayload.model';
 import { verify } from 'jsonwebtoken';
 import { AuthService } from 'src/auth/auth.service';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { AvaliacaoService } from './avaliacao.service';
+import { AvaliacaoDTO } from './DTO/avaliacao.dto';
 
-@Controller('loja')
+@Controller('avaliacao')
 @UseGuards(AuthGuard('jwt'))
-export class LojaController {
+export class AvaliacaoController {
   constructor(
-    private readonly lojaService: LojaService,
+    private readonly avaliacaoService: AvaliacaoService,
     private readonly authService: AuthService,
   ) {}
 
   @Post('nova')
-  @UseInterceptors(FileInterceptor('logo'))
+  @UseInterceptors(FileInterceptor('foto'))
   public async criar(
     @Request() req,
-    @Body() l: LojaDTO,
-    @UploadedFile() logo: any,
+    @Body() a: AvaliacaoDTO,
+    @UploadedFile() foto: any,
   ): Promise<string> {
     const jwtToken = await this.authService.jwtExtractor(req);
     const jwtPay = verify(jwtToken, process.env.JWT_SECRET) as JwtPayload;
     await this.authService.validateUser(jwtPay);
 
-    if (!logo || !logo.buffer) {
-      throw new Error('Nenhum arquivo de logo foi enviado.');
-    }
-
-    const filePath = `lojas/usuario/${logo.originalname}`;
-    const loja = await this.lojaService.criar(
-      l,
+    const filePath = `avaliacoes/${jwtPay.userId}/${foto.originalname}`;
+    const loja = await this.avaliacaoService.criar(
+      a,
       filePath,
-      logo.buffer,
+      foto.buffer,
       jwtPay.userId,
     );
+
+    if (!foto || !foto.buffer) {
+      throw new Error('Nenhum arquivo foi enviado.');
+    }
 
     return loja;
   }
@@ -56,18 +56,33 @@ export class LojaController {
   public async buscarId(
     @Request() req,
     @Param('id') id: string,
-  ): Promise<LojaDTO> {
+  ): Promise<AvaliacaoDTO> {
     const jwtToken = await this.authService.jwtExtractor(req);
     const jwtPay = verify(jwtToken, process.env.JWT_SECRET) as JwtPayload;
     await this.authService.validateUser(jwtPay);
 
-    const loja = await this.lojaService.buscarId(id);
+    const avaliacao = await this.avaliacaoService.buscarId(id);
 
-    if (!loja) {
+    if (!avaliacao) {
       return;
     }
 
-    return loja;
+    return avaliacao;
+  }
+
+  @Get()
+  public async buscarTodos(@Request() req): Promise<AvaliacaoDTO[]> {
+    const jwtToken = await this.authService.jwtExtractor(req);
+    const jwtPay = verify(jwtToken, process.env.JWT_SECRET) as JwtPayload;
+    await this.authService.validateUser(jwtPay);
+
+    const avaliacoes = await this.avaliacaoService.buscarTodos(jwtPay.userId);
+
+    if (!avaliacoes) {
+      return;
+    }
+
+    return avaliacoes;
   }
 
   @Delete(':id')
@@ -77,6 +92,6 @@ export class LojaController {
     await this.authService.validateUser(jwtPay);
 
     const urlImage = await this.buscarId(req, id);
-    return await this.lojaService.deletar(id, urlImage.path);
+    return await this.avaliacaoService.deletar(id, urlImage.path);
   }
 }

@@ -58,12 +58,12 @@ export class UserService {
 
       const userDTO: UserDTO = {
         id: user.id,
-        nome: user._fieldsProto.nome.stringValue,
-        cpf: user._fieldsProto.cpf.stringValue,
-        email: user._fieldsProto.email.stringValue,
-        password: user._fieldsProto.password.stringValue,
-        ativo: user._fieldsProto.ativo.booleanValue,
-        roles: user._fieldsProto.roles.stringValue,
+        nome: user.data().nome,
+        cpf: user.data().cpf,
+        email: user.data().email,
+        password: user.data().password,
+        ativo: user.data().ativo,
+        roles: user.data().roles,
       };
 
       return userDTO;
@@ -97,10 +97,10 @@ export class UserService {
 
       const userDTO: ShowDTO = {
         id: user.id,
-        nome: user._fieldsProto.nome.stringValue,
-        cpf: user._fieldsProto.cpf.stringValue,
-        email: user._fieldsProto.email.stringValue,
-        ativo: user._fieldsProto.ativo.booleanValue,
+        nome: user.data().nome,
+        cpf: user.data().cpf,
+        email: user.data().email,
+        ativo: user.data().ativo,
       };
 
       return userDTO;
